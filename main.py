@@ -2,6 +2,10 @@ import bme280
 import ssd1306
 import utime
 from machine import I2C, Pin
+import framebuf
+
+# image slect
+image_dir = "/img/yacht.txt"
 
 # pico w on board LED init
 led = Pin("LED", Pin.OUT)
@@ -14,7 +18,21 @@ oled = ssd1306.SSD1306_I2C(128, 64, i2c_ssd)
 i2c_bme = I2C(0, scl=Pin(5), sda=Pin(4))
 bme = bme280.BME280(i2c=i2c_bme)
 
+# image show func
+def display_image(x, y, width, height, data):
+    image = framebuf.FrameBuffer(data, width, height, framebuf.MONO_HLSB)
+    oled.blit(image, x, y)
+
+# loading plain bytes from image dir
+def load_image_data(filename):
+    with open(filename, 'r') as file:
+        data = file.read()
+        byte_values = [int(b.strip(), 16) for b in data.split(',')]
+        return bytearray(byte_values)
+image_data = load_image_data(image_dir)
+
 while True:
+    
     # get data from BME280
     temperature, pressure, humidity = bme.read_compensated_data()
 
@@ -32,20 +50,23 @@ while True:
     utime.sleep(0.2)
     led.value(0)
 
-    # OLED display
-
+    # clean-up OLED display
     oled.fill(0)
 
-    # text
-    oled.text(temp_text, 5, 22)
-    oled.text(humidity_text, 5, 35)
-    oled.text(pressure_text, 5, 47)
+    # render loading image
+    display_image(0, 0, 128, 64, image_data)
 
-    #b
-    oled.hline(0, 18, 120, 1) #top
-    oled.hline(0, 58, 120, 1) #bottom
-    oled.vline(0, 18, 40, 1) #left
-    oled.vline(120, 18, 40, 1) #right
+    # text
+    oled.text(temp_text, 5, 5)
+    oled.text(humidity_text, 5, 18)
+    oled.text(pressure_text, 5, 30)
+    oled.text("Good Luck!", 5, 52)
+
+    #box
+    oled.hline(0, 1, 120, 1) #top
+    oled.hline(0, 41, 120, 1) #bottom
+    oled.vline(0, 1, 41, 1) #left
+    oled.vline(120, 1, 41, 1) #right
 
     oled.show()
 
