@@ -1,6 +1,6 @@
 Tempurture, humidity, and pressure sensor by MicroPython Rapsberry Pi Pico W (or Pico).
 
-![PXL_20231210_173749873](https://github.com/quojama/pico-sensor/assets/4445606/94351a25-70b7-4e99-bd5c-5e21986fb28d)
+![image](https://github.com/quojama/pico-sensor/assets/4445606/f22d2cfd-139e-4baa-9424-44ad3c23e016)
 
 ## Components
 
