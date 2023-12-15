@@ -19,5 +19,5 @@ Tempurture, humidity, and pressure sensor by MicroPython Rapsberry Pi Pico W (or
 | - | GP6 (9pin) | SDA |
 | CSB | - | - |
 | SDI | GP4 (6pin) | - |
-| SDO | - | - |
+| SDO | GND | - |
 | SCK | GP5 (7pin) | - |
