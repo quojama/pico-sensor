@@ -34,7 +34,7 @@ Bosch社製のセンサーBME280を使って温湿度と大気圧をOLEDに表�
 
 ディスプレイのサイズは128x64ドットです。何らかの方法で128x64pxのモノクロ二階調の画像を作成してください。JPGでもPNGでも問題ないです。
 
-次に [img2cc](https://javl.github.io/image2cpp/)p を使って画像をプレーンのビットマップに変換します。最後のOutputの項目にあるCode output formatはPlain bytesを選択してください。
+次に [img2ccp](https://javl.github.io/image2cpp/) を使って画像をプレーンのビットマップに変換します。最後のOutputの項目にあるCode output formatはPlain bytesを選択してください。
 
 そちらのビットマップの文字列を.txtとして /img フォルダの中に保存するだけで追加されます。
 
