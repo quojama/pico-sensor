@@ -48,7 +48,7 @@ PASSWORD = "YOUR PASSWORD"
 Connection successful
 ('xxx.xxx.x.xx', 'xxxx.xxx.xxx.x', 'xxx.xxx.x.x', 'xxx.xxx.x.x')
 ```
-`http://YOUR.IP.ADDRESS/` にアクセスし、テキストを入力すれば文字が変わります。
+一番左のアドレスがPICOのIPです。同じネットワーク内のブラウザで `http://YOUR.PICO.IP.ADDRESS/` にアクセスし、テキストを入力すれば文字が変わります。
 
 ![image](https://github.com/quojama/pico-sensor/assets/4445606/537a0396-b74e-464e-b94a-bdd3b73b786f)
 
