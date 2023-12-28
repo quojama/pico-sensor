@@ -50,6 +50,8 @@ Connection successful
 ```
 `http://YOUR.IP.ADDRESS/` にアクセスし、テキストを入力すれば文字が変わります。
 
+![image](https://github.com/quojama/pico-sensor/assets/4445606/537a0396-b74e-464e-b94a-bdd3b73b786f)
+
 文字はスペースも含めて10～11文字以上は右下のイラストと被ってしまいますので良い感じにしてください。
 
 セキュリティは考慮されていないので注意してくださいね。
