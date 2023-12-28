@@ -1,6 +1,6 @@
 ## 概要
 
-Bosch社製のセンサーBME280を使って温湿度と大気圧をOLEDに表示するサンプルです。タクトスイッチを押すことで、画像を切り替えるオマケ機能付きです。
+Bosch社製のセンサーBME280を使って温湿度と大気圧をOLEDに表示するサンプルです。タクトスイッチを押すことで右下の画像を切り替え、ソケット通信で簡単なWebサーバーを作りテキストを表示します。
 
 ![291956404-62c1d481-8774-489e-b8ef-7630af7fb385](https://github.com/quojama/pico-sensor/assets/4445606/65dec7af-0afc-489d-b554-3fbdccdfcf1d)
 
@@ -29,6 +29,30 @@ Bosch社製のセンサーBME280を使って温湿度と大気圧をOLEDに表�
 | SCK    | GP5 (7pin)            | -       | -       | -              |
 | -      | GP10 (14pin)          | -       | Anode   | -              |
 | -      | GP19 (25pin)          | -       | -       | To GND         |
+
+## WIFIの設定
+
+`/lib` ディレクトリに `env.py` ファイルを作成してSSIDとパスワードを設定してください。
+
+```python
+SSID = "YOUR SSID"
+PASSWORD = "YOUR PASSWORD"
+```
+## テキストの切り替え
+
+デフォルトは `Hello!` です。再起動時はこの値になります。
+
+起動するとシェルにPicoのIPアドレスが表示されます。
+
+```bash
+Connection successful
+('xxx.xxx.x.xx', 'xxxx.xxx.xxx.x', 'xxx.xxx.x.x', 'xxx.xxx.x.x')
+```
+`http://YOUR.IP.ADDRESS/` にアクセスし、テキストを入力すれば文字が変わります。
+
+文字はスペースも含めて10～11文字以上は右下のイラストと被ってしまいますので良い感じにしてください。
+
+セキュリティは考慮されていないので注意してくださいね。
 
 ## 画像の作り方
 

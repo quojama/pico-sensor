@@ -1,12 +1,97 @@
 import os
+import select
+import socket
 
 import bme280
+import env
 import framebuf
+import network
 import ssd1306
 import utime
 from machine import I2C, Pin
 
-# タクトスイッチのためにGPIO 19、内蔵プルアップ抵抗を使います。
+# WIFIの設定
+# lib/env.py にSSIDとPASSWORDを設定してください
+ssid = env.SSID
+password = env.PASSWORD
+
+station = network.WLAN(network.STA_IF)
+station.active(True)
+station.connect(ssid, password)
+
+# ネットワークに接続するまで待機
+while not station.isconnected():
+    pass
+
+print("Connection successful")
+print(station.ifconfig())
+
+# グローバル変数。デフォルト値
+display_text = "Hello!"
+
+
+# 受け取った文字列のデコード処理
+def url_decode(s):
+    result = []
+    i = 0
+    while i < len(s):
+        if s[i] == "%":
+            hex_value = s[i + 1 : i + 3]
+            result.append(chr(int(hex_value, 16)))
+            i += 3
+        else:
+            result.append(s[i])
+            i += 1
+    return "".join(result)
+
+
+def handle_request(client):
+    global display_text
+    request = client.recv(1024).decode("utf-8")
+
+    # POSTリクエストからデータ部分を抽出
+    start = request.find("\r\n\r\n")
+    if start != -1:
+        data = request[start + 4 :]
+
+        # データの解析
+        data_components = data.split("&")
+        for component in data_components:
+            if "=" in component:
+                key, value = component.split("=")
+                if key == "text":
+                    # カスタムURLデコード関数を適用
+                    display_text = url_decode(value.replace("+", " "))
+                    break
+
+    # HTMLレスポンス
+    response = """HTTP/1.1 200 OK
+Content-Type: text/html
+
+<html>
+<body>
+<h1>YoooooO!</h1>
+<form action="/" method="post">
+  <input type="text" name="text" placeholder="Enter text">
+  <input type="submit" value="Update">
+</form>
+</body>
+</html>
+"""
+
+    client.sendall(response)
+    client.close()
+
+# ソケットの設定
+s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+s.bind(("", 80))
+s.listen(5)
+s.setblocking(False)  # 非ブロッキングモードに設定
+
+# ---ここまでがWebサーバーの設定---
+
+# タクトスイッチのためにGPIO 19、内蔵プルアップ抵抗を使う。
 button = Pin(19, Pin.IN, Pin.PULL_UP)
 
 # `/img` フォルダ内のテキストファイル名のリスト
@@ -38,9 +123,9 @@ def display_image(x, y, width, height, data):
 
 # 画像データをロード
 def load_image_data(filename):
-    with open(filename, 'r') as file:
+    with open(filename, "r") as file:
         data = file.read()
-        byte_values = [int(b.strip(), 16) for b in data.split(',')]
+        byte_values = [int(b.strip(), 16) for b in data.split(",")]
         return bytearray(byte_values)
 
 # 次の画像をロード
@@ -49,16 +134,29 @@ def load_next_image():
     if image_files:
         # 次の画像にインデックスを更新
         current_image_index = (current_image_index + 1) % len(image_files)
-        image_path = '/img/' + image_files[current_image_index]
+        image_path = "/img/" + image_files[current_image_index]
         return load_image_data(image_path)
     return None
 
 # 起動時の画像をロード
 if image_files:
-    image_data = load_image_data('/img/' + image_files[current_image_index])
+    image_data = load_image_data("/img/" + image_files[current_image_index])
 
 # ここからメインのループ
 while True:
+    readable, _, _ = select.select([s], [], [], 0.1)
+    if readable:
+        for sock in readable:
+            if sock == s:
+                print("Socket is ready for reading")
+                try:
+                    conn, addr = s.accept()
+                    print("Connection accepted from", addr)
+                    conn.setblocking(True)  # クライアントソケットをブロッキングモードに設定
+                    handle_request(conn)
+                except Exception as e:
+                    print("Error handling request:", e)
+
     # タクトスイッチが押されたら外付けLEDを点灯し、
     # 次の画像を読み込む関数を実行
     # 1.5秒スリープして外付けLEDを消灯
@@ -91,12 +189,12 @@ while True:
     oled.text(temp_text, 5, 5)
     oled.text(humidity_text, 5, 18)
     oled.text(pressure_text, 5, 30)
-    oled.text("Merry Xmas", 3, 51)
+    oled.text(display_text, 3, 51)
 
     # テキストを囲む四角
-    oled.hline(0, 1, 125, 1) #top
-    oled.hline(0, 41, 125, 1) #bottom
-    oled.vline(0, 1, 41, 1) #left
-    oled.vline(125, 1, 41, 1) #right
+    oled.hline(0, 1, 125, 1)  # top
+    oled.hline(0, 41, 125, 1)  # bottom
+    oled.vline(0, 1, 41, 1)  # left
+    oled.vline(125, 1, 41, 1)  # right
 
     oled.show()
