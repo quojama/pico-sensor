@@ -16,6 +16,13 @@ ssid = env.SSID
 password = env.PASSWORD
 
 station = network.WLAN(network.STA_IF)
+station.ifconfig((env.FIXED_IP, env.SUBNET_MASK, env.GATEWAY_IP, env.DNS_IP))
+station = network.WLAN(network.STA_IF)
+station.active(True)
+
+station.connect(ssid, password)
+
+station = network.WLAN(network.STA_IF)
 station.active(True)
 station.connect(ssid, password)
 

@@ -33,11 +33,26 @@ Bosch社製のセンサーBME280を使って温湿度と大気圧をOLEDに表�
 ## WIFIの設定
 
 `/lib` ディレクトリに `env.py` ファイルを作成してSSIDとパスワードを設定してください。
+IPアドレスは固定にすることをおすすめします。のでFIXED_IPに固定したいIPアドレスを設定してください。
+
+起動時シェルに表示される
+
+```bash
+Connection successful
+('xxx.xxx.x.xx', 'xxxx.xxx.xxx.x', 'xxx.xxx.x.x', 'xxx.xxx.x.x')
+```
+
+こちらがPicoのIPアドレスです。
 
 ```python
 SSID = "YOUR SSID"
 PASSWORD = "YOUR PASSWORD"
+FIXED_IP = "YOUR FIXED IP ADDRESS"
+SUBNET_MASK = "YOUR SUBNET MASK"
+GATEWAY_IP = "YOUR GATEWAY IP ADDRESS"
+DNS_IP = "YOUR DNS IP ADDRESS"
 ```
+
 ## テキストの切り替え
 
 デフォルトは `Hello!` です。再起動時はこの値になります。
